@@ -35,7 +35,7 @@ void model::assign_u(mat U)
 	uo = U;
 }
 
-void model::run_exact()
+void model::run_exact_first()
 {
 	mat H_tot = diagmat(join_vert(Hs.diag(),Eb));
 	H_tot(span(0,sz-1),span(0,sz-1)) = Hs;
@@ -50,20 +50,39 @@ void model::run_exact()
 	vec E_a;
 	eig_sym(E_a,U_a,H_tot);
 	//
-	mat d0_da, N0_a;
+	mat d0_da;
 	d0_da = U_a.t()*eye(sz+nb,sz);
 	N0_a = U_a.t()*N0*U_a;
 	//
-	cx_mat dt_da(sz+nb,sz),dt_oa(sz+nb,sz);
+	dt_da = cx_cube(sz+nb,sz,nT);
+	cx_mat dt_oa(sz+nb,sz);
 	cx_vec phase;
 	cx_double ii(0,1);
 	for (int t1=0; t1<nT; t1++)
 	{
 		phase = exp(ii*E_a*T_grid(t1));
 		for(int t2=0; t2<sz; t2++)
-			dt_da.col(t2) = phase % d0_da.col(t2);
-		dt_oa = dt_da * uo;
+			dt_da.slice(t1).col(t2) = phase % d0_da.col(t2);
+		dt_oa = dt_da.slice(t1) * uo;
 		ndt.row(t1) = diagvec( real(dt_oa.t() * N0_a * dt_oa) ).t();
+	}
+}
+
+void model::run_exact()
+{
+	if(! has_run_exact)
+	{
+		has_run_exact = 1;
+		run_exact_first();
+	}
+	else
+	{
+		cx_mat dt_oa;
+		for (int t1=0; t1<nT; t1++)
+		{
+			dt_oa = dt_da.slice(t1) * uo;
+			ndt.row(t1) = diagvec( real(dt_oa.t() * N0_a * dt_oa) ).t();
+		}
 	}
 }
 

@@ -13,6 +13,10 @@ private:
 	const int Tmax = nb;
 	const int nT = 100;
 	const double dep=3.0;
+	int has_run_exact=0;
+	void run_exact_first();
+	arma::cx_cube dt_da;
+	arma::mat N0_a;
 public:
 	//
 	double mu, T, beta, v2gamma;
