@@ -14,7 +14,17 @@ int main()
 	MPI_Comm_size(MPI_COMM_WORLD,&size);
 	//
 	model m1;
-	mat H={{-0.1,0.0047,-0.0138},{0.0047,-0.1183,0},{-0.0138,0,-0.0927}};
+	double e0,e1,e2,v01,v02,v12;
+	if (rank == 0)
+		cin>>e0>>e1>>e2>>v01>>v02>>v12;
+	MPI_Bcast(&e0,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Bcast(&e1,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Bcast(&e2,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Bcast(&v01,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Bcast(&v02,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	MPI_Bcast(&v12,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
+	
+	mat H={{e0,v01,v02},{v01,e1,v12},{v02,v12,e2}};
 	vec V={0.0035,0,0};
 	m1.init(0,0.1);
 	m1.load_system(H,V);
