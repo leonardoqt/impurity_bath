@@ -132,5 +132,6 @@ void model::run_redfield()
 
 double model::get_err()
 {
-	return sqrt( trace( (npt-ndt).t()*(npt-ndt) ) / sz / nT );
+	//return sqrt( trace( (npt-ndt).t()*(npt-ndt) ) / sz / nT );
+	return max( max( abs(npt-ndt) ) );
 }

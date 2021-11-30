@@ -28,22 +28,23 @@ int main()
 	vec V={0.0035,0,0};
 	m1.init(0,0.1);
 	m1.load_system(H,V);
-	double amin = 0, amax = datum::pi, bmin = amin, bmax = amax, cmin = amin, cmax = amax;
-	double dt = datum::pi / 4;
+	double amin = 0, amax = 2 * datum::pi, bmin = amin, bmax = amax, cmin = amin, cmax = amax;
+	int npoint = 50;
+	double dt = amax / (npoint-1);
 	vec an,bn,cn;
 	double min_err=1e15, min_a, min_b, min_c;
 	double* send=new double[4];
 	double* recv=new double[4*size];
-	for(int t1=0; t1<10; t1++)
+	for(int t1=0; t1<3; t1++)
 	{
-		an = linspace(amin,amax,5);
-		bn = linspace(bmin,bmax,5);
-		cn = linspace(cmin,cmax,5);
-		for(int t2=0; t2<5; t2++)
-		for(int t3=0; t3<5; t3++)
-		for(int t4=0; t4<5; t4++)
+		an = linspace(amin,amax,npoint);
+		bn = linspace(bmin,bmax,npoint);
+		cn = linspace(cmin,cmax,npoint);
+		for(int t2=0; t2<npoint; t2++)
+		for(int t3=0; t3<npoint; t3++)
+		for(int t4=0; t4<npoint; t4++)
 		{
-			int ind = t2*25+t3*5+t4;
+			int ind = t2*npoint*npoint+t3*npoint+t4;
 			if(ind%size == rank)
 			{
 				double cc = cos(an(t2)), ss = sin(an(t2));
@@ -83,7 +84,7 @@ int main()
 		MPI_Bcast(&bmax,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
 		MPI_Bcast(&cmin,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
 		MPI_Bcast(&cmax,1,MPI_DOUBLE,0,MPI_COMM_WORLD);
-		dt /= 2;
+		dt = 2 * dt / (npoint-1);
 	}
 	//
 	if (rank == 0)
