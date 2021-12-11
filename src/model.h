@@ -37,6 +37,11 @@ public:
 	void run_exact();
 	void run_redfield();
 	double get_err();
+	// 
+	arma::mat gen_u1(); // full adiabatic
+	arma::mat gen_u2(); // one talk, then adiabatic
+	arma::mat gen_u3(); // one talk, then max the other talk
+	arma::mat gen_u4(); // diag the above to get two talk
 };
 
 #endif

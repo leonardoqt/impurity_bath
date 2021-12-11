@@ -28,6 +28,7 @@ int main()
 	vec V={0.0035,0,0};
 	m1.init(0,0.1);
 	m1.load_system(H,V);
+	/*
 	double amin = 0, amax = 2 * datum::pi, bmin = amin, bmax = amax, cmin = amin, cmax = amax;
 	int npoint = 50;
 	double dt = amax / (npoint-1);
@@ -112,6 +113,67 @@ int main()
 		cout<<"Best error:"<<endl;
 		cout<<m1.get_err()<<endl;
 	}
+	*/
+	mat aHs(3,12,fill::zeros), aG(3,4,fill::zeros), aU(3,12,fill::zeros), aHn(3,12,fill::zeros),aGn(3,4,fill::zeros);
+	vec aerr(4,fill::zeros);
+	mat UU;
+	//1
+	UU = m1.gen_u1();
+	m1.assign_u(UU);
+	m1.run_exact();
+	m1.run_redfield();
+	aG.col(0) = (m1.Vsb%m1.Vsb)*m1.v2gamma;
+	aGn.col(0) = ((m1.uo.t()*m1.Vsb)%(m1.uo.t()*m1.Vsb))*m1.v2gamma;
+	aU.cols(0,2) = m1.uo;
+	aHs.cols(0,2) = m1.Hs;
+	aHn.cols(0,2) = m1.uo.t() * m1.Hs * m1.uo;
+	aerr(0) = m1.get_err();
+	//2
+	UU = m1.gen_u2();
+	m1.assign_u(UU);
+	m1.run_exact();
+	m1.run_redfield();
+	aG.col(1) = (m1.Vsb%m1.Vsb)*m1.v2gamma;
+	aGn.col(1) = ((m1.uo.t()*m1.Vsb)%(m1.uo.t()*m1.Vsb))*m1.v2gamma;
+	aU.cols(3,5) = m1.uo;
+	aHs.cols(3,5) = m1.Hs;
+	aHn.cols(3,5) = m1.uo.t() * m1.Hs * m1.uo;
+	aerr(1) = m1.get_err();
+	//3
+	UU = m1.gen_u3();
+	m1.assign_u(UU);
+	m1.run_exact();
+	m1.run_redfield();
+	aG.col(2) = (m1.Vsb%m1.Vsb)*m1.v2gamma;
+	aGn.col(2) = ((m1.uo.t()*m1.Vsb)%(m1.uo.t()*m1.Vsb))*m1.v2gamma;
+	aU.cols(6,8) = m1.uo;
+	aHs.cols(6,8) = m1.Hs;
+	aHn.cols(6,8) = m1.uo.t() * m1.Hs * m1.uo;
+	aerr(2) = m1.get_err();
+	//4
+	UU = m1.gen_u4();
+	m1.assign_u(UU);
+	m1.run_exact();
+	m1.run_redfield();
+	aG.col(3) = (m1.Vsb%m1.Vsb)*m1.v2gamma;
+	aGn.col(3) = ((m1.uo.t()*m1.Vsb)%(m1.uo.t()*m1.Vsb))*m1.v2gamma;
+	aU.cols(9,11) = m1.uo;
+	aHs.cols(9,11) = m1.Hs;
+	aHn.cols(9,11) = m1.uo.t() * m1.Hs * m1.uo;
+	aerr(3) = m1.get_err();
+	//
+	cout<<"Hamiltonian:"<<endl;
+	aHs.print();
+	cout<<"Gamma:"<<endl;
+	aG.print();
+	cout<<"Best basis:"<<endl;
+	aU.print();
+	cout<<"New Hamiltonian:"<<endl;
+	aHn.print();
+	cout<<"New Gamma:"<<endl;
+	aGn.print();
+	cout<<"Best error:"<<endl;
+	aerr.t().print();
 	MPI_Finalize();
 	return 0;
 }

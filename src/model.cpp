@@ -135,3 +135,76 @@ double model::get_err()
 	//return sqrt( trace( (npt-ndt).t()*(npt-ndt) ) / sz / nT );
 	return max( max( abs(npt-ndt) ) );
 }
+
+mat model::gen_u1()
+{
+	mat U;
+	vec val;
+	eig_sym(val,U,Hs);
+	return U;
+}
+
+mat model::gen_u2()
+{
+	mat U,V,tmpx;
+	vec val;
+	//
+	tmpx = mat(3,3,fill::zeros);
+	tmpx.col(0) = Vsb;
+	svd(U,val,V,tmpx);
+	//
+	mat H2 = U.t() * Hs * U;
+	mat H1212 = H2(span(1,2),span(1,2));
+	mat u2;
+	eig_sym(val,u2,H1212);
+	mat U2 = eye(3,3);
+	U2(span(1,2),span(1,2)) = u2;
+	U = U * U2;
+	return U;
+}
+
+mat model::gen_u3()
+{
+	mat U,V,tmpx;
+	vec val;
+	//
+	tmpx = mat(3,3,fill::zeros);
+	tmpx.col(0) = Vsb;
+	svd(U,val,V,tmpx);
+	//
+	mat H2 = U.t() * Hs * U;
+	tmpx = mat(2,2,fill::zeros);
+	tmpx.col(0) = H2(span(1,2),span(0,0));
+	mat u2;
+	svd(u2,val,V,tmpx);
+	mat U2 = eye(3,3);
+	U2(span(1,2),span(1,2)) = u2;
+	U = U * U2;
+	return U;
+}
+
+mat model::gen_u4()
+{
+	mat U,V,tmpx;
+	vec val;
+	//
+	tmpx = mat(3,3,fill::zeros);
+	tmpx.col(0) = Vsb;
+	svd(U,val,V,tmpx);
+	//
+	mat H2 = U.t() * Hs * U;
+	tmpx = mat(2,2,fill::zeros);
+	tmpx.col(0) = H2(span(1,2),span(0,0));
+	mat u2;
+	svd(u2,val,V,tmpx);
+	mat U2 = eye(3,3);
+	U2(span(1,2),span(1,2)) = u2;
+	U = U * U2;
+	H2 = U.t() * Hs * U;
+	tmpx = H2(span(0,1),span(0,1));
+	eig_sym(val,u2,tmpx);
+	U2 = eye(3,3);
+	U2(span(0,1),span(0,1)) = u2;
+	U = U * U2;
+	return U;
+}
