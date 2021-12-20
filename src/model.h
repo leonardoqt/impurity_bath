@@ -42,6 +42,8 @@ public:
 	arma::mat gen_u2(); // one talk, then adiabatic
 	arma::mat gen_u3(); // one talk, then max the other talk
 	arma::mat gen_u4(); // diag the above to get two talk
+	//
+	arma::mat gen_u_ang(double); // a 2x2 rotation
 };
 
 #endif

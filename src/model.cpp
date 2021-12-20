@@ -28,6 +28,7 @@ void model::load_system(mat HS, vec VSB)
 {
 	Hs = HS;
 	Vsb = VSB;
+	has_run_exact = 0;
 }
 
 void model::assign_u(mat U)
@@ -206,5 +207,15 @@ mat model::gen_u4()
 	U2 = eye(3,3);
 	U2(span(0,1),span(0,1)) = u2;
 	U = U * U2;
+	return U;
+}
+
+mat model::gen_u_ang(double theta)
+{
+	mat U = eye(3,3);
+	U(1,1) = cos(theta);
+	U(1,2) = sin(theta);
+	U(2,1) =-sin(theta);
+	U(2,2) = cos(theta);
 	return U;
 }
